@@ -1,0 +1,15 @@
+# Compiled output
+compiler
+compiler.dSYM/
+lexer_test
+
+# Object files
+*.o
+*.obj
+
+# Editor files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
