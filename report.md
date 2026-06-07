@@ -212,20 +212,18 @@ Generates Three Address Code (TAC) by walking the AST:
 
 Temporary variables (`t0`, `t1`, ...) are generated for intermediate results. Labels (`L0`, `L1`, ...) are used for control flow targets.
 
-### Phase 8: Driver (index.cpp)
+### Driver / Pipeline (index.cpp)
 
 **Files:** `index.cpp`
 
-Orchestrates the compilation pipeline:
+Orchestrates the compilation pipeline in 4 sequential phases:
 
-1. Reads source file via `ifstream`
-2. Runs Lexer, collects all tokens into a vector
-3. Checks for lexical errors (ILLEGAL tokens)
-4. Prints token stream (debug mode)
-5. Runs Parser, builds AST (Program*)
-6. Runs Semantic Analyzer on the AST
-7. Runs Code Generator on the AST
-8. Outputs TAC instructions and "Compilation Successful!"
+1. **Phase 1 — Lexical Analysis:** Reads source, tokenizes, checks for illegal characters
+2. **Phase 2 — Syntax Analysis:** Recursive descent parser builds AST from token stream
+3. **Phase 3 — Semantic Analysis:** Type checking, variable resolution, using the Symbol Table
+4. **Phase 4 — Code Generation:** Walks the AST and emits Three Address Code (TAC) instructions
+
+Supporting components that run throughout: `ErrorHandler` (collects errors from all phases) and the `SymbolTable` (used by the semantic analyzer for scope management).
 
 ## 4. Test Results
 
@@ -233,25 +231,26 @@ Orchestrates the compilation pipeline:
 
 | Test | Description | Result |
 |------|-------------|--------|
-| `hello.txt` | Variable decl, assign, output, return | ✅ Compiles |
-| `factorial.txt` | While loop, function call, recursion | ✅ Compiles |
-| `if_else.txt` | If-else with comparison | ✅ Compiles |
-| `for_loop.txt` | For loop with increment | ✅ Compiles |
-| `fibonacci.txt` | Multiple blocks, while loop | ✅ Compiles |
-| `all_constructs.txt` | Mixed arithmetic, logical, if-else | ✅ Compiles |
+| `hello.c` | Variable decl, assign, output, return | ✅ Compiles |
+| `factorial.c` | While loop, function call, recursion | ✅ Compiles |
+| `if_else.c` | If-else with comparison | ✅ Compiles |
+| `for_loop.c` | For loop with increment | ✅ Compiles |
+| `fibonacci.c` | Multiple blocks, while loop | ✅ Compiles |
+| `bool_test.c` | Bool decl, if/while with bool, logical ops | ✅ Compiles |
+| `all_constructs.c` | Mixed arithmetic, logical, if-else | ✅ Compiles |
 
 ### Invalid Programs
 
 | Test | Error Type | Expected | Actual |
 |------|-----------|----------|--------|
-| `missing_semicolon.txt` | Syntax | Missing `;` after declaration | ✅ Detected |
-| `unmatched_paren.txt` | Syntax | Unmatched `(` | ✅ Detected |
-| `type_mismatch.txt` | Semantic | `int = bool` and `bool = int` | ✅ Detected |
-| `undeclared_var.txt` | Semantic | Variable not declared | ✅ Detected |
-| `redeclaration.txt` | Semantic | Variable redeclared in same scope | ✅ Detected |
-| `return_type_mismatch.txt` | Semantic | Return type mismatch + assignment mismatch | ✅ Detected |
+| `missing_semicolon.c` | Syntax | Missing `;` after declaration | ✅ Detected |
+| `unmatched_paren.c` | Syntax | Unmatched `(` | ✅ Detected |
+| `type_mismatch.c` | Semantic | `int = bool` and `bool = int` | ✅ Detected |
+| `undeclared_var.c` | Semantic | Variable not declared | ✅ Detected |
+| `redeclaration.c` | Semantic | Variable redeclared in same scope | ✅ Detected |
+| `return_type_mismatch.c` | Semantic | Return type mismatch + assignment mismatch | ✅ Detected |
 
-### Sample TAC Output (factorial.txt)
+### Sample TAC Output (factorial.c)
 
 ```
 factorial_entry:
@@ -346,19 +345,20 @@ CC_LAB/
 │   └── CodeGenerator.cpp
 ├── tests/                    # Test cases
 │   ├── valid/                # Should compile cleanly
-│   │   ├── hello.txt
-│   │   ├── factorial.txt
-│   │   ├── if_else.txt
-│   │   ├── for_loop.txt
-│   │   ├── fibonacci.txt
-│   │   └── all_constructs.txt
+│   │   ├── hello.c
+│   │   ├── factorial.c
+│   │   ├── if_else.c
+│   │   ├── for_loop.c
+│   │   ├── fibonacci.c
+│   │   ├── bool_test.c
+│   │   └── all_constructs.c
 │   └── invalid/              # Should produce errors
-│       ├── missing_semicolon.txt
-│       ├── unmatched_paren.txt
-│       ├── type_mismatch.txt
-│       ├── undeclared_var.txt
-│       ├── redeclaration.txt
-│       └── return_type_mismatch.txt
+│       ├── missing_semicolon.c
+│       ├── unmatched_paren.c
+│       ├── type_mismatch.c
+│       ├── undeclared_var.c
+│       ├── redeclaration.c
+│       └── return_type_mismatch.c
 └── report.md                 # This report
 ```
 
@@ -369,7 +369,7 @@ CC_LAB/
 make
 
 # Compile a source file
-./compiler tests/valid/hello.txt
+./compiler tests/valid/hello.c
 
 # Run all tests
 make test

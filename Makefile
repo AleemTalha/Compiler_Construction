@@ -16,7 +16,7 @@ clean:
 	rm -f compiler src/*.o
 
 run: compiler
-	./compiler tests/valid/hello.c
+	./compiler tests/valid/bool_test.c
 
 test: compiler
 	@echo "=== Valid Tests ==="
@@ -25,6 +25,8 @@ test: compiler
 	./compiler tests/valid/factorial.c || true
 	@echo ""
 	./compiler tests/valid/for_loop.c || true
+	@echo ""
+	./compiler tests/valid/bool_test.c || true
 	@echo ""
 	@echo "=== Invalid Tests ==="
 	./compiler tests/invalid/missing_semicolon.c || true

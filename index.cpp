@@ -41,7 +41,8 @@ int main(int argc, char* argv[])
 
     ErrorHandler errors;
 
-    // Phase 1: Lexical Analysis
+    // Phase 1: Lexical Analysis (Scanner)
+    // Reads source text, produces a stream of tokens
     cout << "=== Phase 1: Lexical Analysis ===" << endl;
     Lexer lexer(source);
 
@@ -134,8 +135,9 @@ int main(int argc, char* argv[])
         cout << "  '" << t.lexeme << "'" << endl;
     }
 
-    // Phase 3: Syntax Analysis
-    cout << "\n=== Phase 3: Syntax Analysis ===" << endl;
+    // Phase 2: Syntax Analysis (Parser + AST construction)
+    // Builds AST from token stream via recursive descent
+    cout << "\n=== Phase 2: Syntax Analysis ===" << endl;
     Parser parser;
     parser.setTokens(tokens, tokenCount, &errors);
     Program* program = parser.parse();
@@ -151,8 +153,9 @@ int main(int argc, char* argv[])
 
     cout << "Parsing successful." << endl;
 
-    // Phase 5: Semantic Analysis
-    cout << "\n=== Phase 5: Semantic Analysis ===" << endl;
+    // Phase 3: Semantic Analysis (Type checking + Symbol Table)
+    // Walks AST, resolves variables, validates types
+    cout << "\n=== Phase 3: Semantic Analysis ===" << endl;
     SemanticAnalyzer analyzer(&errors);
     analyzer.analyze(program);
 
@@ -167,8 +170,9 @@ int main(int argc, char* argv[])
 
     cout << "Semantic analysis successful." << endl;
 
-    // Phase 7: Code Generation
-    cout << "\n=== Phase 7: Code Generation ===" << endl;
+    // Phase 4: Code Generation (Three Address Code)
+    // Walks AST, emits TAC instructions
+    cout << "\n=== Phase 4: Code Generation ===" << endl;
     CodeGenerator codeGen;
     codeGen.generate(program);
     codeGen.printCode();
